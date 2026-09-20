@@ -24,6 +24,7 @@
     path: $(".signal-path"),
     teacherTrigger: $("#teacher-trigger"),
     pinDialog: $("#pin-dialog"),
+    pinDialogClose: $("#pin-dialog-close"),
     pinForm: $("#pin-form"),
     pinInput: $("#admin-pin"),
     pinMessage: $("#pin-message"),
@@ -569,6 +570,10 @@
   });
   elements.form.addEventListener("submit", submitAttendance);
   elements.teacherTrigger.addEventListener("click", openTeacherArea);
+  elements.pinDialogClose.addEventListener("click", () => {
+    setPinMessage("");
+    elements.pinDialog.close();
+  });
   elements.pinForm.addEventListener("submit", submitPin);
   elements.pinDialog.addEventListener("close", () => setPinMessage(""));
   elements.adminClose.addEventListener("click", closeDashboard);
