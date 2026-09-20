@@ -1,0 +1,12 @@
+{
+  "name": "attendance-check-in",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Сайт отметки посещаемости студентов",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

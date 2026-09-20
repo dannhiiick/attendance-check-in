@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111719" />
+    <meta name="description" content="Сервис отметки посещаемости для студентов и преподавателя" />
+    <title>Сигнал · отметка посещаемости</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="orbit orbit-one" aria-hidden="true"></div>
+    <div class="orbit orbit-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#student-form" aria-label="Сигнал — главная">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span>СИГНАЛ<small>· ЖУРНАЛ 01</small></span>
+      </a>
+      <p class="header-status"><span class="status-dot"></span>канал открыт</p>
+    </header>
+
+    <main class="shell">
+      <aside class="dispatch-panel" aria-label="Статус отметки">
+        <p class="eyebrow">УЧЕБНЫЙ КАНАЛ</p>
+        <div class="day-card">
+          <span id="todayWeekday">СЕГОДНЯ</span>
+          <strong id="todayDate">—</strong>
+          <time id="liveClock">--:--:--</time>
+        </div>
+
+        <ol class="signal-path" aria-label="Этапы отметки">
+          <li class="is-active"><span>01</span><p><b>Идентификация</b><small>Введите ФИО</small></p></li>
+          <li><span>02</span><p><b>Маршрут</b><small>Укажите группу</small></p></li>
+          <li><span>03</span><p><b>Штамп времени</b><small>Подтвердите присутствие</small></p></li>
+        </ol>
+
+        <p class="dispatch-note">Одна отметка на студента в день. Повторные записи система не пропускает.</p>
+      </aside>
+
+      <section class="attendance-zone" aria-labelledby="page-title">
+        <div class="title-row">
+          <p class="eyebrow">ПРИСУТСТВИЕ / <span id="dateKeyLabel">ЗАГРУЗКА</span></p>
+          <span class="sequence">№ 0001</span>
+        </div>
+        <h1 id="page-title">Поставьте<br /><em>свой сигнал.</em></h1>
+        <p class="intro">Короткая отметка вместо бумажного листа. Запись сразу попадёт в журнал вашей группы.</p>
+
+        <form class="attendance-ticket" id="student-form" novalidate>
+          <div class="ticket-topline"><span>ПРОПУСК НА ЗАНЯТИЕ</span><span id="formDate">—</span></div>
+
+          <fieldset class="form-step" id="name-step">
+            <legend><span>01</span> Как вас записать?</legend>
+            <label for="fullName">Фамилия, имя, отчество</label>
+            <input id="fullName" name="fullName" autocomplete="name" placeholder="Например, Айдосова Аружан Ерлановна" maxlength="90" required />
+            <p class="field-hint">Не менее фамилии и имени — так преподавателю проще сверить журнал.</p>
+          </fieldset>
+
+          <fieldset class="form-step is-locked" id="group-step" disabled>
+            <legend><span>02</span> К какой группе вы относитесь?</legend>
+            <label for="group">Группа</label>
+            <input id="group" name="group" list="group-options" autocomplete="organization" placeholder="Например, ИС-23-1" maxlength="32" required />
+            <datalist id="group-options">
+              <option value="ИС-23-1"></option>
+              <option value="ИС-23-2"></option>
+              <option value="ПД-24-1"></option>
+              <option value="ЭК-24-1"></option>
+            </datalist>
+            <p class="field-hint">Начните вводить название или выберите группу из списка.</p>
+          </fieldset>
+
+          <div class="form-actions">
+            <button class="stamp-button" type="submit" id="submit-button" disabled>
+              <span class="stamp-icon">↗</span>
+              <span>ПОСТАВИТЬ ШТАМП</span>
+              <small>отправить отметку</small>
+            </button>
+            <p class="privacy-note"><span>◉</span> Список студентов доступен только преподавателю.</p>
+          </div>
+
+          <div class="form-message" id="form-message" role="status" aria-live="polite" hidden></div>
+          <div class="success-stamp" id="success-stamp" aria-hidden="true">
+            <span>✓</span><b>ПРИНЯТО</b><small id="success-time">--:--</small>
+          </div>
+        </form>
+
+        <button class="teacher-trigger" type="button" id="teacher-trigger">
+          <span>⊞</span> Пульт преподавателя
+        </button>
+      </section>
+    </main>
+
+    <section class="admin-layer" id="admin-layer" hidden aria-labelledby="admin-title">
+      <div class="admin-head">
+        <div>
+          <p class="eyebrow">ЗАКРЫТЫЙ КАНАЛ / ПРЕПОДАВАТЕЛЬ</p>
+          <h2 id="admin-title">Журнал<br /><em>по группам.</em></h2>
+        </div>
+        <button class="close-button" type="button" id="admin-close" aria-label="Закрыть журнал">×</button>
+      </div>
+
+      <div class="dashboard-controls">
+        <label class="date-control" for="admin-date"><span>Дата журнала</span><input id="admin-date" type="date" /></label>
+        <div class="dashboard-buttons">
+          <button class="quiet-button" type="button" id="refresh-button">Обновить</button>
+          <button class="export-button" type="button" id="export-button">Скачать CSV <span>↓</span></button>
+        </div>
+      </div>
+
+      <div class="dashboard-summary" id="dashboard-summary" aria-live="polite">
+        <article><span>ВСЕГО</span><strong id="total-count">0</strong><small>отметок</small></article>
+        <article><span>ГРУПП</span><strong id="group-count">0</strong><small>в журнале</small></article>
+        <article class="search-card"><label for="student-search">ПОИСК В ЖУРНАЛЕ</label><input id="student-search" type="search" placeholder="ФИО или группа" /></article>
+      </div>
+
+      <div class="journal-status" id="journal-status" role="status" aria-live="polite"></div>
+      <div class="group-grid" id="group-grid"></div>
+    </section>
+
+    <dialog class="pin-dialog" id="pin-dialog" aria-labelledby="pin-title">
+      <form method="dialog" id="pin-form">
+        <button class="dialog-close" value="cancel" aria-label="Закрыть">×</button>
+        <p class="eyebrow">ДОСТУП ОГРАНИЧЕН</p>
+        <h2 id="pin-title">Откройте<br /><em>пульт.</em></h2>
+        <p>Введите код преподавателя, чтобы посмотреть записи по группам.</p>
+        <label for="admin-pin">Код доступа</label>
+        <input id="admin-pin" type="password" inputmode="numeric" autocomplete="current-password" minlength="4" maxlength="64" placeholder="••••••••" required />
+        <button class="stamp-button dialog-submit" type="submit"><span class="stamp-icon">→</span><span>ВОЙТИ В ЖУРНАЛ</span></button>
+        <div class="dialog-message" id="pin-message" role="status" aria-live="polite"></div>
+      </form>
+    </dialog>
+
+    <template id="empty-journal-template">
+      <div class="empty-journal"><span>⌁</span><h3>Здесь пока тихо</h3><p>На выбранную дату ещё нет отметок.</p></div>
+    </template>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
