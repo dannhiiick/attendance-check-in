@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: attendance-check-in
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: DATA_DIR
+        value: /data
+      - key: ADMIN_PIN
+        generateValue: true
+    disk:
+      - name: attendance-data
+        mountPath: /data
+        sizeGB: 1

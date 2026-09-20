@@ -12,7 +12,7 @@ const crypto = require('node:crypto');
 
 const ROOT_DIR = __dirname;
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
-const DATA_DIR = path.resolve(ROOT_DIR, process.env.DATA_DIR || 'data');
+const DATA_DIR = resolveDataDir(process.env.DATA_DIR || 'data');
 const DATA_FILE = path.join(DATA_DIR, 'attendance.json');
 const MAX_JSON_BYTES = 16 * 1024;
 const KAZAKHSTAN_TIME_ZONE = process.env.KZ_TIME_ZONE || 'Asia/Qyzylorda';
@@ -128,6 +128,29 @@ server.listen(PORT, HOST, () => {
 
 // Не даём интервальным таймерам удерживать процесс, когда сервер уже остановлен.
 setInterval(cleanExpiredState, 5 * 60 * 1000).unref();
+
+function resolveDataDir(configuredDir) {
+  const FALLBACK_CANDIDATES = [
+    configuredDir && configuredDir.trim() ? path.resolve(ROOT_DIR, configuredDir) : null,
+    configuredDir && configuredDir.trim() ? path.resolve(configuredDir) : null,
+    path.join(ROOT_DIR, 'data'),
+    path.join(require('node:os').tmpdir(), 'attendance-check-data'),
+  ].filter(Boolean);
+
+  for (const candidate of FALLBACK_CANDIDATES) {
+    try {
+      fs.mkdirSync(candidate, { recursive: true });
+      const probeFile = path.join(candidate, `.write-test-${process.pid}-${Date.now()}.tmp`);
+      fs.writeFileSync(probeFile, 'ok', 'utf8');
+      fs.unlinkSync(probeFile);
+      return candidate;
+    } catch {
+      // Переходим к следующему допустимому каталогу.
+    }
+  }
+
+  return path.join(ROOT_DIR, 'data');
+}
 
 function readIntegerConfig(name, fallback, min, max) {
   const value = process.env[name];
